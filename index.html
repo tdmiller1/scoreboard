@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>Scoreboard</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">        
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+            body{
+                margin-top: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="well">
+                        <h3>Scoreboard</h3>
+                        <ul class="list-group" id="users">
+
+                        </ul>
+                    </div>
+                    <div class="col-md-8">
+                        <form id="messageForm">
+                            <div class="form-group">
+                                <label>Player One Score</label>
+                                <h1 id="playerOneScore">0</h1>
+                                <input type="button" id="playerOneScored" class="btn btn-primary" value="One Scored" /> 
+                                <label>Player Two Score</label>
+                                <h1 id="playerTwoScore">0</h1>
+                                <input type="button" id="playerTwoScored" class="btn btn-primary" value="Two Scored" /> 
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(function (){
+                var socket = io.connect();
+                var $playerOneScore = $('#playerOneScore');
+                var $playerTwoScore = $('#playerTwoScore');
+                var $playerOneScored = $('#playerOneScored');
+                var $playerTwoScored = $('#playerTwoScored');
+
+                $playerOneScored.click(function(){
+                    console.log("Client Player 1 Clicked");
+                    socket.emit('player1', 1);
+                })
+
+                $playerTwoScored.click(function(){
+                    console.log("Client Player 2 Clicked");
+                    socket.emit('player2', 1);
+                })
+
+                socket.on('player2', function(data){
+                    console.log("SERVER RESPONDS PLAYER 2 SCORED");
+                    console.log("Player 2 Score: " + $playerTwoScore.text())
+                    $playerTwoScore.text(parseInt($playerTwoScore.text()) + data.msg);
+                })
+
+                socket.on('player1', function(data){
+                    console.log("SERVER RESPONDS PLAYER 1 SCORED");
+                    console.log("Player 1 Score: " + $playerTwoScore.text())
+                    $playerOneScore.text(parseInt($playerOneScore.text()) + data.msg);
+                })
+            });
+        </script>
+    </body>
+</html>
